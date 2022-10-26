@@ -1,19 +1,24 @@
 """
-使用pyautogui实现键鼠控制
+使用pyautogui和pydirectinput实现，可能适用于使用DirectInput接受输入的程序
 """
 import re
-
-# import pyperclip
-import pyautogui
 import pyperclip
+import pyautogui
+import pydirectinput
+import ctypes
+import win32con
 
 from Event.Event import Event
 from loguru import logger
 
-SW, SH = pyautogui.size()
+user32 = ctypes.windll.user32
+user32.SetProcessDPIAware()
+numofmonitors = user32.GetSystemMetrics(win32con.SM_CMONITORS)
+# 主屏分辨率
+SW, SH = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 
-class UniversalEvent(Event):
+class WindowsEvent(Event):
     # 改变坐标
     # pos 为包含横纵坐标的元组
     # 值为int型:绝对坐标
@@ -48,20 +53,20 @@ class UniversalEvent(Event):
                     x = int(x * SW)
                 if not isinstance(y, int):
                     y = int(y * SH)
-                pyautogui.moveTo(x, y)
+                pydirectinput.moveTo(x, y)
 
             if self.message == 'mouse left down':
-                pyautogui.mouseDown(button='left')
+                pydirectinput.mouseDown(button='left')
             elif self.message == 'mouse left up':
-                pyautogui.mouseUp(button='left')
+                pydirectinput.mouseUp(button='left')
             elif self.message == 'mouse right down':
-                pyautogui.mouseDown(button='right')
+                pydirectinput.mouseDown(button='right')
             elif self.message == 'mouse right up':
-                pyautogui.mouseUp(button='right')
+                pydirectinput.mouseUp(button='right')
             elif self.message == 'mouse middle down':
-                pyautogui.mouseDown(button='middle')
+                pydirectinput.mouseDown(button='middle')
             elif self.message == 'mouse middle up':
-                pyautogui.mouseUp(button='middle')
+                pydirectinput.mouseUp(button='middle')
             elif self.message == 'mouse wheel up':
                 pyautogui.scroll(1)
             elif self.message == 'mouse wheel down':
@@ -75,9 +80,9 @@ class UniversalEvent(Event):
             key_code, key_name, extended = self.action
 
             if self.message == 'key down':
-                pyautogui.keyDown(key_name)
+                pydirectinput.keyDown(key_name)
             elif self.message == 'key up':
-                pyautogui.keyUp(key_name)
+                pydirectinput.keyUp(key_name)
             else:
                 logger.warning('Unknown keyboard event:', self.message)
 
@@ -86,14 +91,14 @@ class UniversalEvent(Event):
                 text = self.action
                 pyperclip.copy(text)
 
-                # Doesn't support UTF-8 Characters
+                # Doesn't support UTF-8 characters
                 # pyautogui.write(text)
 
                 # Ctrl+V
-                pyautogui.keyDown(button='ctrl')
-                pyautogui.keyDown(button='v')
-                pyautogui.keyUp(button='v')
-                pyautogui.keyUp(button='ctrl')
+                pydirectinput.press('ctrl')
+                pydirectinput.press('v')
+                pydirectinput.release('v')
+                pydirectinput.release('ctrl')
             else:
                 logger.warning('Unknown extra event:%s' % self.message)
 

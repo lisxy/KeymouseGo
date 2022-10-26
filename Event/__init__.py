@@ -2,9 +2,11 @@ from platform import system
 
 
 if system() == 'Windows':
-    import Event.WindowsEvents as _Event
-    event_cls = _Event.WindowsEvent
-    flag_multiplemonitor = _Event.numofmonitors > 1
+    import Event.UniversalEvents_Alternative as _Event
+    # event_cls = _Event.WindowsEvent
+    event_cls = _Event.UniversalEvent
+    flag_multiplemonitor = False
+    # flag_multiplemonitor = _Event.numofmonitors > 1
 elif system() in ['Linux', 'Darwin']:
     import Event.UniversalEvents as _Event
     event_cls = _Event.UniversalEvent

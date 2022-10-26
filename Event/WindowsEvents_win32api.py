@@ -1,3 +1,6 @@
+"""
+使用Win32api实现键鼠控制
+"""
 import re
 import pyperclip
 import win32api

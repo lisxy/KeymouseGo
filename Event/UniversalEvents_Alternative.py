@@ -1,15 +1,16 @@
 """
-使用pyautogui实现键鼠控制
+使用keyboard和mouse实现键鼠控制
 """
 import re
 
-# import pyperclip
 import pyautogui
+import keyboard
+import mouse
 import pyperclip
 
 from Event.Event import Event
 from loguru import logger
-
+# 暂时使用pyautogui获取屏幕大小
 SW, SH = pyautogui.size()
 
 
@@ -49,23 +50,24 @@ class UniversalEvent(Event):
                 if not isinstance(y, int):
                     y = int(y * SH)
                 pyautogui.moveTo(x, y)
+                mouse.move(x, y)
 
             if self.message == 'mouse left down':
-                pyautogui.mouseDown(button='left')
+                mouse.press(button='left')
             elif self.message == 'mouse left up':
-                pyautogui.mouseUp(button='left')
+                mouse.release(button='left')
             elif self.message == 'mouse right down':
-                pyautogui.mouseDown(button='right')
+                mouse.press(button='right')
             elif self.message == 'mouse right up':
-                pyautogui.mouseUp(button='right')
+                mouse.release(button='right')
             elif self.message == 'mouse middle down':
-                pyautogui.mouseDown(button='middle')
+                mouse.press(button='middle')
             elif self.message == 'mouse middle up':
-                pyautogui.mouseUp(button='middle')
+                mouse.release(button='middle')
             elif self.message == 'mouse wheel up':
-                pyautogui.scroll(1)
+                mouse.wheel(1)
             elif self.message == 'mouse wheel down':
-                pyautogui.scroll(-1)
+                mouse.wheel(-1)
             elif self.message == 'mouse move':
                 pass
             else:
@@ -75,9 +77,9 @@ class UniversalEvent(Event):
             key_code, key_name, extended = self.action
 
             if self.message == 'key down':
-                pyautogui.keyDown(key_name)
+                keyboard.press(key_name)
             elif self.message == 'key up':
-                pyautogui.keyUp(key_name)
+                keyboard.release(key_name)
             else:
                 logger.warning('Unknown keyboard event:', self.message)
 
@@ -87,13 +89,13 @@ class UniversalEvent(Event):
                 pyperclip.copy(text)
 
                 # Doesn't support UTF-8 Characters
-                # pyautogui.write(text)
+                # keyboard.write(text)
 
                 # Ctrl+V
-                pyautogui.keyDown(button='ctrl')
-                pyautogui.keyDown(button='v')
-                pyautogui.keyUp(button='v')
-                pyautogui.keyUp(button='ctrl')
+                keyboard.press('ctrl')
+                keyboard.press('v')
+                keyboard.release('v')
+                keyboard.release('ctrl')
             else:
                 logger.warning('Unknown extra event:%s' % self.message)
 
